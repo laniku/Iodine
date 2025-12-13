@@ -12,7 +12,7 @@ install -m 000 /dev/null /usr/lib/kernel/install.d/05-rpm-ostree.install
 
 # Install Vanilla Kernel
 dnf5 -y copr enable @kernel-vanilla/stable
-dnf5 -y install \
+dnf5 -y install --setopt=install_weak_deps=False \
     kernel \
     kernel-core \
     kernel-modules \
