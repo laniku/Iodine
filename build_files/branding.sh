@@ -6,13 +6,13 @@ source /usr/lib/os-release || false
 
 IMAGE_PRETTY_NAME="Iodine"
 IMAGE_LIKE="fedora"
-HOME_URL="https://github.com/ecstasy-rh/Iodine/"
-SUPPORT_URL="https://github.com/ecstasy-rh/Iodine/issues"
-BUG_SUPPORT_URL="https://github.com/ecstasy-rh/Iodine/issues"
+HOME_URL="https://github.com/laniku/Iodine/"
+SUPPORT_URL="https://github.com/laniku/Iodine/issues"
+BUG_SUPPORT_URL="https://github.com/ecstasy-rh/laniku/issues"
 CODE_NAME="Forty-Three"
 #VERSION="${VERSION:-00.00000000}"
 IMAGE_NAME=iodine
-IMAGE_VENDOR=ecstasy-rh
+IMAGE_VENDOR=laniku
 
 
 # OS Release File
