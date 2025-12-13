@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-CONTEXT_PATH="$(realpath "$(dirname "$0")/..")" # should return /run/context
+CONTEXT_PATH="$(realpath "$(dirname "$0")/..")"
 BUILD_SCRIPTS_PATH="$(realpath "$(dirname "$0")")"
 MAJOR_VERSION_NUMBER="$(sh -c '. /usr/lib/os-release ; echo $VERSION_ID')"
 SCRIPTS_PATH="$(realpath "$(dirname "$0")/scripts")"
@@ -28,7 +28,7 @@ copy_systemfiles_for() {
 	fi
 	printf "::group:: ===%s-file-copying===\n" "${DISPLAY_NAME}"
 	
-	find "${CONTEXT_PATH}/files/$WHAT" -maxdepth 1 -print0 | while IFS= read -r -d $'\0' file ; do
+	find "${CONTEXT_PATH}/$WHAT" -maxdepth 1 -print0 | while IFS= read -r -d $'\0' file ; do
 		if [ -d "$file" ] ; then
 			if [ "$(basename "$file")" != "root" ] ; then
 				rsync -a -v --ignore-times --exclude='.git' "${file}" "/${file}"
@@ -36,25 +36,21 @@ copy_systemfiles_for() {
 		fi
 	done
 	
-	if [ -d "${CONTEXT_PATH}/files/$WHAT/root" ] ; then
-		rsync -a -v --ignore-times --exclude='.git' "${CONTEXT_PATH}/files/$WHAT/root/" "/"
+	if [ -d "${CONTEXT_PATH}/$WHAT/root" ] ; then
+		rsync -a -v --ignore-times --exclude='.git' "${CONTEXT_PATH}/$WHAT/root/" "/"
 	fi
 	
 	printf "::endgroup::\n"
 }
 
 CUSTOM_NAME="base"
-copy_systemfiles_for files
+copy_systemfiles_for system_files 
 
 run_buildscripts_for scripts/00-image-info.sh
 run_buildscripts_for scripts/01-repos.sh
 run_buildscripts_for scripts/02-branding.sh
 run_buildscripts_for scripts/03-kernel-replace.sh
 run_buildscripts_for scripts/10-desktop-extras.sh
-run_buildscripts_for scripts/20-install-apps.sh
-run_buildscripts_for scripts/40-services.sh
-run_buildscripts_for scripts/50-fix-opt.sh
-run_buildscripts_for scripts/60-clean-base.sh
 run_buildscripts_for scripts/99-build-initramfs.sh
 run_buildscripts_for scripts/999-cleanup.sh
 
