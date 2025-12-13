@@ -1,7 +1,8 @@
 FROM scratch AS ctx
-COPY . /ctx
+COPY build_files /
 
 FROM ghcr.io/ublue-os/silverblue-main:43
+COPY system_files /
 
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     --mount=type=cache,dst=/var/cache/dnf \
