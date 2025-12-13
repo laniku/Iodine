@@ -15,6 +15,7 @@ for pkg in kernel kernel{-core,-modules,-modules-core,-modules-extra,-tools-libs
     rpm --erase $pkg --nodeps
 done
 rm -rf /usr/lib/modules
+rm -f /usr/lib/kernel/install.d/05-rpm-ostree.install
 
 dnf5 -y copr enable @kernel-vanilla/stable
 dnf5 -y install \
@@ -28,6 +29,14 @@ dnf5 -y install \
     kernel-tools \
     kernel-tools-libs
 dnf5 -y copr disable @kernel-vanilla/stable
+
+dnf5 versionlock add \
+    kernel \
+    kernel-devel \
+    kernel-core \
+    kernel-modules \
+    kernel-modules-core \
+    kernel-modules-extra
 
 # Install GNOME
 dnf5 -y install @gnome-desktop
