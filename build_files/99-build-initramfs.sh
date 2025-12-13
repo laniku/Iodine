@@ -5,6 +5,10 @@ log() {
   echo "=== $* ==="
 }
 
+log "Running depmod"
+KERNEL_VERSION=$(rpm -q --queryformat="%{evr}.%{arch}" kernel-core)
+/sbin/depmod -a "$KERNEL_VERSION"
+
 log "Building initramfs"
 
 KERNEL_VERSION=$(rpm -q --queryformat="%{evr}.%{arch}" kernel-core)
