@@ -5,14 +5,28 @@ set -ouex pipefail
 ### Install packages
 
 # RPMFusion for goodies
-dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-42.noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-42.noarch.rpm
+dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-43.noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-43.noarch.rpm
 
 # Install Terra
 dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
 
 # Use vanilla kernel for faster updates and more universal device support
+for pkg in kernel kernel{-core,-modules,-modules-core,-modules-extra,-tools-libs,-tools}; do
+    rpm --erase $pkg --nodeps
+done
+rm -rf /usr/lib/modules
+
 dnf5 -y copr enable @kernel-vanilla/stable
-dnf5 -y upgrade 'kernel*'
+dnf5 -y install \
+    kernel \
+    kernel-core \
+    kernel-modules \
+    kernel-modules-core \
+    kernel-modules-extra \
+    kernel-devel \
+    kernel-headers \
+    kernel-tools \
+    kernel-tools-libs
 dnf5 -y copr disable @kernel-vanilla/stable
 
 # Install GNOME
@@ -30,6 +44,12 @@ systemctl enable keyd
 # Ectool for low-level management related to the embedded controller
 dnf5 -y install chromium-ectool
 
-# Install linuxbrew
-mkdir /etc/skel/homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C /etc/skel/homebrew
-echo 'export PATH="$HOME/homebrew/bin:$PATH"' >> /etc/skel/.bash_profile
+# Install ublue goodies
+dnf5 -y copr enable ublue-os/packages
+dnf5 -y install \
+    ublue-brew \
+    ublue-fastfetch \
+    ublue-motd \
+    ublue-polkit-rules \
+    ublue-setup-services
+dnf5 -y copr disable ublue-os/packages
