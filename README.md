@@ -17,6 +17,6 @@ This project is heavily based on configurations and other things adapted from ot
 - **Chromebooks utilizing ARM processors:** Are also not supported. There may eventually be a port, but don't count on it just yet.
 
 #### Installation:
-Install Fedora Silverblue 42, and rebase using:
-`sudo bootc switch ghcr.io/ecstasy-rh/Iodine:latest`
+Install Fedora Silverblue 43, and rebase using:
+`sudo bootc switch ghcr.io/laniku/Iodine:latest`
 Installing through an ISO is coming soon.
