@@ -19,32 +19,7 @@ run_buildscripts_for() {
 	printf "::endgroup::\n"
 }
 
-copy_systemfiles_for() {
-	WHAT=$1
-	shift
-	DISPLAY_NAME=$WHAT
-	if [ "${CUSTOM_NAME}" != "" ] ; then
-		DISPLAY_NAME=$CUSTOM_NAME
-	fi
-	printf "::group:: ===%s-file-copying===\n" "${DISPLAY_NAME}"
-	
-	find "${CONTEXT_PATH}/$WHAT" -maxdepth 1 -print0 | while IFS= read -r -d $'\0' file ; do
-		if [ -d "$file" ] ; then
-			if [ "$(basename "$file")" != "root" ] ; then
-				rsync -a -v --ignore-times --exclude='.git' "${file}" "/${file}"
-			fi
-		fi
-	done
-	
-	if [ -d "${CONTEXT_PATH}/$WHAT/root" ] ; then
-		rsync -a -v --ignore-times --exclude='.git' "${CONTEXT_PATH}/$WHAT/root/" "/"
-	fi
-	
-	printf "::endgroup::\n"
-}
-
 CUSTOM_NAME="base"
-copy_systemfiles_for system_files 
 
 run_buildscripts_for scripts/00-image-info.sh
 run_buildscripts_for scripts/01-repos.sh
