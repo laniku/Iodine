@@ -1,64 +1,57 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -ouex pipefail
+set -eo pipefail
 
-### Install packages
+CONTEXT_PATH="$(realpath "$(dirname "$0")/..")"
+BUILD_SCRIPTS_PATH="$(realpath "$(dirname "$0")")"
+MAJOR_VERSION_NUMBER="$(sh -c '. /usr/lib/os-release ; echo $VERSION_ID')"
+SCRIPTS_PATH="$(realpath "$(dirname "$0")/scripts")"
+export CONTEXT_PATH
+export SCRIPTS_PATH
+export MAJOR_VERSION_NUMBER
 
-# RPMFusion for goodies
-dnf5 -y install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-43.noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-43.noarch.rpm
+run_buildscripts_for() {
+	SCRIPT_PATH=$1
+	shift
+	
+	printf "::group:: ===BUILD-SCRIPT-%s===\n" "$(basename "$SCRIPT_PATH")"
+	"$(realpath "$SCRIPT_PATH")"
+	printf "::endgroup::\n"
+}
 
-# Install Terra
-dnf5 -y install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
+copy_systemfiles_for() {
+	WHAT=$1
+	shift
+	DISPLAY_NAME=$WHAT
+	if [ "${CUSTOM_NAME}" != "" ] ; then
+		DISPLAY_NAME=$CUSTOM_NAME
+	fi
+	printf "::group:: ===%s-file-copying===\n" "${DISPLAY_NAME}"
+	
+	find "${CONTEXT_PATH}/$WHAT" -maxdepth 1 -print0 | while IFS= read -r -d $'\0' file ; do
+		if [ -d "$file" ] ; then
+			if [ "$(basename "$file")" != "root" ] ; then
+				rsync -a -v --ignore-times --exclude='.git' "${file}" "/${file}"
+			fi
+		fi
+	done
+	
+	if [ -d "${CONTEXT_PATH}/$WHAT/root" ] ; then
+		rsync -a -v --ignore-times --exclude='.git' "${CONTEXT_PATH}/$WHAT/root/" "/"
+	fi
+	
+	printf "::endgroup::\n"
+}
 
-# Use vanilla kernel for faster updates and more universal device support
-for pkg in kernel kernel{-core,-modules,-modules-core,-modules-extra,-tools-libs,-tools}; do
-    rpm --erase $pkg --nodeps
-done
-rm -rf /usr/lib/modules
-rm -f /usr/lib/kernel/install.d/05-rpm-ostree.install
+CUSTOM_NAME="base"
+copy_systemfiles_for system_files 
 
-dnf5 -y copr enable @kernel-vanilla/stable
-dnf5 -y install \
-    kernel \
-    kernel-core \
-    kernel-modules \
-    kernel-modules-core \
-    kernel-modules-extra \
-    kernel-devel \
-    kernel-headers \
-    kernel-tools \
-    kernel-tools-libs
-dnf5 -y copr disable @kernel-vanilla/stable
+run_buildscripts_for scripts/00-image-info.sh
+run_buildscripts_for scripts/01-repos.sh
+run_buildscripts_for scripts/02-branding.sh
+run_buildscripts_for scripts/03-kernel-replace.sh
+run_buildscripts_for scripts/10-desktop-extras.sh
+run_buildscripts_for scripts/99-build-initramfs.sh
+run_buildscripts_for scripts/999-cleanup.sh
 
-dnf5 versionlock add \
-    kernel \
-    kernel-devel \
-    kernel-core \
-    kernel-modules \
-    kernel-modules-core \
-    kernel-modules-extra
-
-# Install GNOME
-dnf5 -y install @gnome-desktop
-systemctl enable gdm
-
-# Install Chromium
-dnf5 -y install chromium fedora-chromium-config
-dnf5 -y remove firefox
-
-# Keyd for cb keyboard mapping
-dnf5 -y install keyd
-systemctl enable keyd
-
-# Ectool for low-level management related to the embedded controller
-dnf5 -y install chromium-ectool
-
-# Install ublue goodies
-dnf5 -y copr enable ublue-os/packages
-dnf5 -y install \
-    ublue-brew \
-    ublue-fastfetch \
-    ublue-motd \
-    ublue-polkit-rules \
-    ublue-setup-services
-dnf5 -y copr disable ublue-os/packages
+CUSTOM_NAME=
