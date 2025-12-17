@@ -12,7 +12,7 @@ SUPPORT_URL="https://github.com/laniku/Iodine/issues"
 BUG_SUPPORT_URL="https://github.com/laniku/Iodine/issues"
 CODE_NAME="Fourty Three"
 VERSION="${VERSION:-00.00000000}"
-
+IMAGE_VENDOR="laniku"
 IMAGE_INFO="/usr/share/ublue-os/image-info.json"
 IMAGE_REF="ostree-image-signed:docker://ghcr.io/$IMAGE_VENDOR/$IMAGE_NAME"
 
