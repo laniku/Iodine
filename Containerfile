@@ -1,7 +1,3 @@
-ARG BASE_IMAGE_NAME="silverblue"
-ARG FEDORA_MAJOR_VERSION="43"
-ARG UBLUE_IMAGE_TAG="unstable"
-
 FROM scratch AS ctx
 COPY build_files /
 
