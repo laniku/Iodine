@@ -1,3 +1,6 @@
+ARG BASE_IMAGE_NAME="silverblue"
+ARG FEDORA_MAJOR_VERSION="43"
+
 FROM scratch AS ctx
 COPY build_files /
 
