@@ -26,8 +26,6 @@ cat >$IMAGE_INFO <<EOF
   "image-flavor": "$image_flavor",
   "image-vendor": "$IMAGE_VENDOR",
   "image-ref": "$IMAGE_REF",
-  "base-image-name": "$BASE_IMAGE_NAME",
-  "fedora-version": "$FEDORA_MAJOR_VERSION"
 }
 EOF
 
