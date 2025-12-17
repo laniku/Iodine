@@ -17,10 +17,5 @@ dnf5 -y install chromium-ectool
 
 # Install ublue goodies
 dnf5 -y copr enable ublue-os/packages
-dnf5 -y install \
-    ublue-brew \
-    ublue-fastfetch \
-    ublue-motd \
-    ublue-polkit-rules \
-    ublue-setup-services
+dnf -y install ublue-*
 dnf5 -y copr disable ublue-os/packages
