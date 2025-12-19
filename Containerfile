@@ -9,7 +9,6 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache/dnf \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/00-image-info.sh && \
     /ctx/01-repos.sh && \
     ostree container commit
 
